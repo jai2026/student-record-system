@@ -4,70 +4,542 @@
   <meta charset="UTF-8" />
   <title>Student Records</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #e9ecef;
-      text-align: center;
-      padding: 40px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow-x: hidden;
+      padding: 40px 20px;
+    }
+
+    /* Animated background elements - matching the form page */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     h1 {
-      margin-bottom: 30px;
-      color: #333;
-    }
-
-    table {
-      margin: 0 auto;
-      border-collapse: collapse;
-      width: 80%;
-      background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 12px;
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      animation: slideDown 0.8s ease-out;
       text-align: center;
     }
 
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .table-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      animation: slideUp 0.8s ease-out 0.2s both;
+      overflow-x: auto;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: transparent;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
     th {
-      background-color: #007BFF;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 18px 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 14px;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    th::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    th:hover::before {
+      left: 100%;
+    }
+
+    td {
+      padding: 15px;
+      border: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      background: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    tr {
+      transition: all 0.3s ease;
+      animation: fadeInRow 0.6s ease-out both;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(240, 242, 247, 0.8);
+    }
+
+    tr:hover td {
+      background: rgba(102, 126, 234, 0.1);
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    @keyframes fadeInRow {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Stagger row animations */
+    tr:nth-child(1) { animation-delay: 0.1s; }
+    tr:nth-child(2) { animation-delay: 0.2s; }
+    tr:nth-child(3) { animation-delay: 0.3s; }
+    tr:nth-child(4) { animation-delay: 0.4s; }
+    tr:nth-child(5) { animation-delay: 0.5s; }
+    tr:nth-child(6) { animation-delay: 0.6s; }
+    tr:nth-child(7) { animation-delay: 0.7s; }
+    tr:nth-child(8) { animation-delay: 0.8s; }
+    tr:nth-child(9) { animation-delay: 0.9s; }
+    tr:nth-child(10) { animation-delay: 1.0s; }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 30px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      animation: slideUp 0.8s ease-out 0.4s both;
+      text-align: center;
+      display: block;
+      width: fit-content;
+      margin: 30px auto 0;
+    }
+
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Empty state styling */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    /* Floating particles - matching the form page */
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatParticle 8s infinite linear;
+    }
+
+    @keyframes floatParticle {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Loading animation for when data is being fetched */
+    .loading {
+      text-align: center;
+      padding: 40px;
       color: white;
     }
 
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
     }
 
-    a {
-      display: inline-block;
-      margin-top: 30px;
-      text-decoration: none;
-      color: #007BFF;
-      font-weight: bold;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    a:hover {
-      text-decoration: underline;
+    /* Responsive design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .table-container {
+        padding: 20px 15px;
+        margin: 0 10px;
+      }
+      
+      th, td {
+        padding: 12px 8px;
+        font-size: 14px;
+      }
+      
+      body {
+        padding: 20px 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      th, td {
+        padding: 10px 6px;
+        font-size: 12px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>All Student Records</h1>
-  <table>
-    {% for row in records %}
-      <tr>
-        {% for item in row %}
-          {% if loop.index0 == 0 %}
-            <th>{{ item }}</th>
-          {% else %}
-            <td>{{ item }}</td>
-          {% endif %}
-        {% endfor %}
-      </tr>
-    {% endfor %}
-  </table>
-  <br>
-  <a href="/">← Go Back</a>
+  <div class="container">
+    <h1>All Student Records</h1>
+    <div class="table-container">
+         {% if records and records|length > 0 %}
+        <table id="studentsTable">
+          {% for row in records %}
+            <tr {% if not loop.first %}style="animation-delay: {{ 0.1 + (loop.index0 * 0.1) }}s"{% endif %}>
+              {% for item in row %}
+                {% if loop.index0 == 0 %}
+                  <th>{{ item }}</th>
+                {% else %}
+                  <td>{{ item }}</td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <div class="empty-state">
+          <h3>No Records Found</h3>
+          <p>Add your first student record to get started!</p>
+        </div>
+      {% endif %}
+      
+    </div>
+    <a href="/" class="back-link">← Go Back</a>
+  </div>
+
+  <script>
+    // Sample data - replace with actual API call or server data
+    const studentRecords = [
+      { id: 'STU001', name: 'Alice Johnson', age: 20, grade: 'A' },
+      { id: 'STU002', name: 'Bob Smith', age: 19, grade: 'B+' },
+      { id: 'STU003', name: 'Carol Davis', age: 21, grade: 'A-' },
+      { id: 'STU004', name: 'David Wilson', age: 20, grade: 'B' },
+      { id: 'STU005', name: 'Emma Brown', age: 18, grade: 'A+' },
+      { id: 'STU006', name: 'Frank Miller', age: 22, grade: 'B-' },
+      { id: 'STU007', name: 'Grace Lee', age: 19, grade: 'A' },
+      { id: 'STU008', name: 'Henry Clark', age: 21, grade: 'C+' }
+    ];
+
+    // Function to show loading state
+    function showLoading() {
+      const table = document.getElementById('studentsTable');
+      table.innerHTML = `
+        <tr>
+          <td colspan="4" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading student records...</p>
+          </td>
+        </tr>
+      `;
+    }
+
+    // Function to show empty state
+    function showEmptyState() {
+      const tableContainer = document.querySelector('.table-container');
+      tableContainer.innerHTML = `
+        <div class="empty-state">
+          <h3>No Records Found</h3>
+          <p>Add your first student record to get started!</p>
+        </div>
+      `;
+    }
+
+    // Function to render table with data
+    function renderTable(data) {
+      const table = document.getElementById('studentsTable');
+      
+      if (!data || data.length === 0) {
+        showEmptyState();
+        return;
+      }
+
+      // Create table header
+      let tableHTML = `
+        <tr>
+          <th>Student ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Grade</th>
+        </tr>
+      `;
+
+      // Add data rows
+      data.forEach((student, index) => {
+        tableHTML += `
+          <tr style="animation-delay: ${0.1 + (index * 0.1)}s">
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${student.age}</td>
+            <td>${student.grade}</td>
+          </tr>
+        `;
+      });
+
+      table.innerHTML = tableHTML;
+
+      // Add hover effects to new rows
+      addTableInteractivity();
+    }
+
+    // Function to add interactivity to table rows
+    function addTableInteractivity() {
+      const tableRows = document.querySelectorAll('tr:not(:first-child)');
+      tableRows.forEach((row, index) => {
+        row.addEventListener('mouseenter', function() {
+          this.style.transform = 'scale(1.02) translateZ(0)';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+          this.style.transform = 'scale(1) translateZ(0)';
+        });
+      });
+    }
+
+    // Function to simulate API call or fetch data
+   
+
+    // Function to show error state
+    function showError(error) {
+      const tableContainer = document.querySelector('.table-container');
+      tableContainer.innerHTML = `
+        <div class="empty-state">
+          <h3 style="color: #dc3545;">Error Loading Records</h3>
+          <p>Unable to load student records. Please try again.</p>
+          <button onclick="loadStudentData()" style="
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+          ">Retry</button>
+        </div>
+      `;
+    }
+
+    // Function to refresh data
+    function refreshData() {
+      loadStudentData();
+    }
+
+    // Create floating particles - matching the form page
+    function createParticle() {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      
+      const size = Math.random() * 4 + 2;
+      const left = Math.random() * 100;
+      const delay = Math.random() * 8;
+      
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = left + '%';
+      particle.style.animationDelay = delay + 's';
+      
+      document.body.appendChild(particle);
+      
+      setTimeout(() => {
+        particle.remove();
+      }, 8000);
+    }
+
+    // Generate particles periodically
+    setInterval(createParticle, 300);
+
+    // Add search functionality
+    function addSearchFeature() {
+      const searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Search students...';
+      searchInput.style.cssText = `
+        width: 100%;
+        max-width: 300px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 16px;
+        backdrop-filter: blur(10px);
+        outline: none;
+        transition: all 0.3s ease;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      `;
+      
+      searchInput.addEventListener('focus', function() {
+        this.style.background = 'rgba(255, 255, 255, 0.3)';
+        this.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+      });
+      
+      searchInput.addEventListener('blur', function() {
+        this.style.background = 'rgba(255, 255, 255, 0.2)';
+        this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+      });
+      
+      const tableContainer = document.querySelector('.table-container');
+      tableContainer.insertBefore(searchInput, tableContainer.firstChild);
+      
+      // Search functionality
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#studentsTable tr:not(:first-child)');
+        
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          if (text.includes(searchTerm)) {
+            row.style.display = '';
+            row.style.animation = 'fadeInRow 0.3s ease-out';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // Initialize the page
+    window.addEventListener('load', function() {
+      // Load data dynamically
+      loadStudentData();
+      
+      // Add search functionality
+      setTimeout(() => {
+        addSearchFeature();
+      }, 2000); // Add search after table loads
+    });
+
+    // Add refresh functionality (optional)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+        e.preventDefault();
+        refreshData();
+      }
+    });
+  </script>
 </body>
 </html>
