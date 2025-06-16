@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 FILENAME = "students.csv"
 
-# Ensure file exists
+# Create the CSV file with headers if it doesn't exist
 if not os.path.exists(FILENAME):
     with open(FILENAME, "w", newline="") as f:
         writer = csv.writer(f)
@@ -17,15 +17,19 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add():
-    id = request.form['id']
-    name = request.form['name']
-    age = request.form['age']
-    grade = request.form['grade']
+    id = request.form.get('id')
+    name = request.form.get('name')
+    age = request.form.get('age')
+    grade = request.form.get('grade')
 
     if id and name and age and grade:
         with open(FILENAME, "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([id, name, age, grade])
+        print(f"Added: {id}, {name}, {age}, {grade}")
+    else:
+        print("Missing data. Not saved.")
+
     return redirect('/')
 
 @app.route('/view')
@@ -37,4 +41,3 @@ def view():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
-

@@ -1,545 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Student Records</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records - Modern Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      position: relative;
-      overflow-x: hidden;
-      padding: 40px 20px;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: auto;
+        }
 
-    /* Animated background elements - matching the form page */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
-      animation: float 6s ease-in-out infinite;
-      z-index: 0;
-    }
+        /* Floating background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+            z-index: 0;
+        }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
-    }
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(360deg); }
+        }
 
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s ease-out;
+        }
 
-    h1 {
-      color: white;
-      font-size: 2.5rem;
-      margin-bottom: 40px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      animation: slideDown 0.8s ease-out;
-      text-align: center;
-    }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        h2 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
 
-    .table-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-      animation: slideUp 0.8s ease-out 0.2s both;
-      overflow-x: auto;
-    }
+        @keyframes glow {
+            from { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.3); }
+            to { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.5); }
+        }
 
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        .search-container {
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out 0.4s forwards;
+            opacity: 0;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: transparent;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
+        .search-wrapper {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
 
-    th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 18px 15px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 14px;
-      border: none;
-      position: relative;
-      overflow: hidden;
-    }
+        .search-input {
+            width: 100%;
+            padding: 18px 60px 18px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
 
-    th::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
 
-    th:hover::before {
-      left: 100%;
-    }
+        .search-input:focus {
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
 
-    td {
-      padding: 15px;
-      border: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      background: rgba(255, 255, 255, 0.8);
-      transition: all 0.3s ease;
-      position: relative;
-    }
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
 
-    tr {
-      transition: all 0.3s ease;
-      animation: fadeInRow 0.6s ease-out both;
-    }
+        .search-input:focus + .search-icon {
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
 
-    tr:nth-child(even) td {
-      background: rgba(240, 242, 247, 0.8);
-    }
+        /* Search results highlighting */
+        .highlight {
+            background: rgba(255, 235, 59, 0.3);
+            color: rgba(255, 255, 255, 1);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
 
-    tr:hover td {
-      background: rgba(102, 126, 234, 0.1);
-      transform: scale(1.02);
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-    }
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
 
-    @keyframes fadeInRow {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
+        .no-results.show {
+            display: block;
+        }
 
-    /* Stagger row animations */
-    tr:nth-child(1) { animation-delay: 0.1s; }
-    tr:nth-child(2) { animation-delay: 0.2s; }
-    tr:nth-child(3) { animation-delay: 0.3s; }
-    tr:nth-child(4) { animation-delay: 0.4s; }
-    tr:nth-child(5) { animation-delay: 0.5s; }
-    tr:nth-child(6) { animation-delay: 0.6s; }
-    tr:nth-child(7) { animation-delay: 0.7s; }
-    tr:nth-child(8) { animation-delay: 0.8s; }
-    tr:nth-child(9) { animation-delay: 0.9s; }
-    tr:nth-child(10) { animation-delay: 1.0s; }
+        .table-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out 0.2s forwards;
+            opacity: 0;
+        }
 
-    .back-link {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 12px 30px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      text-decoration: none;
-      border-radius: 25px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(10px);
-      animation: slideUp 0.8s ease-out 0.4s both;
-      text-align: center;
-      display: block;
-      width: fit-content;
-      margin: 30px auto 0;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-    .back-link:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
 
-    /* Empty state styling */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: rgba(0, 0, 0, 0.6);
-    }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: transparent;
+            font-size: 1rem;
+        }
 
-    .empty-state h3 {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-      color: #667eea;
-    }
+        th, td {
+            padding: 20px 24px;
+            text-align: left;
+            border: none;
+            position: relative;
+            color: white;
+            font-weight: 500;
+        }
 
-    .empty-state p {
-      font-size: 1rem;
-      opacity: 0.8;
-    }
+        th {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
 
-    /* Floating particles - matching the form page */
-    .particle {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: floatParticle 8s infinite linear;
-    }
+        th:first-child {
+            border-top-left-radius: 16px;
+        }
 
-    @keyframes floatParticle {
-      0% {
-        transform: translateY(100vh) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100px) rotate(360deg);
-        opacity: 0;
-      }
-    }
+        th:last-child {
+            border-top-right-radius: 16px;
+        }
 
-    /* Loading animation for when data is being fetched */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: white;
-    }
+        tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInRow 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-30px);
+        }
 
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
+        tr:nth-child(1) { animation-delay: 0.1s; }
+        tr:nth-child(2) { animation-delay: 0.2s; }
+        tr:nth-child(3) { animation-delay: 0.3s; }
+        tr:nth-child(4) { animation-delay: 0.4s; }
+        tr:nth-child(5) { animation-delay: 0.5s; }
+        tr:nth-child(n+6) { animation-delay: 0.6s; }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        @keyframes slideInRow {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
-    /* Responsive design */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2rem;
-      }
-      
-      .table-container {
-        padding: 20px 15px;
-        margin: 0 10px;
-      }
-      
-      th, td {
-        padding: 12px 8px;
-        font-size: 14px;
-      }
-      
-      body {
-        padding: 20px 10px;
-      }
-    }
+        tbody tr {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+        }
 
-    @media (max-width: 480px) {
-      th, td {
-        padding: 10px 6px;
-        font-size: 12px;
-      }
-      
-      h1 {
-        font-size: 1.8rem;
-      }
-    }
-  </style>
+        tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px) scale(1.01);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+
+        tbody tr:hover td {
+            color: rgba(255, 255, 255, 1);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Glowing border effect on hover */
+        tbody tr::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            border-radius: 0 4px 4px 0;
+        }
+
+        tbody tr:hover::before {
+            transform: scaleY(1);
+        }
+
+        td:first-child,
+        th:first-child {
+            padding-left: 30px;
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out 0.8s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: floatParticle 3s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Empty state styling */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            h2 {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+
+            .table-container {
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            th, td {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            th {
+                font-size: 0.85rem;
+            }
+
+            .nav-link {
+                padding: 14px 28px;
+                font-size: 1rem;
+            }
+
+            tbody tr:hover {
+                transform: none;
+                scale: 1;
+            }
+        }
+
+        /* Scrollbar styling */
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Loading animation for dynamic content */
+        .loading-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>All Student Records</h1>
-    <div class="table-container">
-         {% if records and records|length > 0 %}
-        <table id="studentsTable">
-          {% for row in records %}
-            <tr {% if not loop.first %}style="animation-delay: {{ 0.1 + (loop.index0 * 0.1) }}s"{% endif %}>
-              {% for item in row %}
-                {% if loop.index0 == 0 %}
-                  <th>{{ item }}</th>
-                {% else %}
-                  <td>{{ item }}</td>
-                {% endif %}
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </table>
-      {% else %}
-        <div class="empty-state">
-          <h3>No Records Found</h3>
-          <p>Add your first student record to get started!</p>
+    <!-- Floating particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 0.5s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 1.5s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 2.5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 0.3s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 0.8s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 1.3s;"></div>
+
+    <div class="container">
+        <h2>Student Records</h2>
+        
+        <div class="search-container">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Search students by ID, name, age, or grade..." class="search-input">
+                <div class="search-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </div>
+            </div>
         </div>
-      {% endif %}
-      
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>Age</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in records %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        
+
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="no-results" id="noResults">
+                <h3>No matching students found</h3>
+                <p>Try adjusting your search terms</p>
+            </div>
+        </div>
+
+        <div class="nav-container">
+            <a href="/" class="nav-link">← Back to Form</a>
+        </div>
     </div>
-    <a href="/" class="back-link">← Go Back</a>
-  </div>
 
-  <script>
-    // Sample data - replace with actual API call or server data
-    const studentRecords = [
-      { id: 'STU001', name: 'Alice Johnson', age: 20, grade: 'A' },
-      { id: 'STU002', name: 'Bob Smith', age: 19, grade: 'B+' },
-      { id: 'STU003', name: 'Carol Davis', age: 21, grade: 'A-' },
-      { id: 'STU004', name: 'David Wilson', age: 20, grade: 'B' },
-      { id: 'STU005', name: 'Emma Brown', age: 18, grade: 'A+' },
-      { id: 'STU006', name: 'Frank Miller', age: 22, grade: 'B-' },
-      { id: 'STU007', name: 'Grace Lee', age: 19, grade: 'A' },
-      { id: 'STU008', name: 'Henry Clark', age: 21, grade: 'C+' }
-    ];
+    <script>
+        // Enhanced table interactions and search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            const searchInput = document.getElementById('searchInput');
+            const noResults = document.getElementById('noResults');
+            const tbody = document.querySelector('tbody');
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleRows = 0;
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let rowText = '';
+                    
+                    // Combine all cell text for searching
+                    cells.forEach(cell => {
+                        rowText += cell.textContent.toLowerCase() + ' ';
+                    });
+                    
+                    // Clear previous highlights
+                    cells.forEach(cell => {
+                        cell.innerHTML = cell.textContent;
+                    });
+                    
+                    if (searchTerm === '' || rowText.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleRows++;
+                        
+                        // Highlight matching text
+                        if (searchTerm !== '') {
+                            cells.forEach(cell => {
+                                const cellText = cell.textContent;
+                                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                                const highlightedText = cellText.replace(regex, '<span class="highlight">$1</span>');
+                                cell.innerHTML = highlightedText;
+                            });
+                        }
+                        
+                        // Re-animate visible rows
+                        setTimeout(() => {
+                            row.style.animation = 'slideInRow 0.4s ease-out forwards';
+                        }, 50);
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide no results message
+                if (visibleRows === 0 && searchTerm !== '') {
+                    noResults.classList.add('show');
+                } else {
+                    noResults.classList.remove('show');
+                }
+            });
 
-    // Function to show loading state
-    function showLoading() {
-      const table = document.getElementById('studentsTable');
-      table.innerHTML = `
-        <tr>
-          <td colspan="4" class="loading">
-            <div class="loading-spinner"></div>
-            <p>Loading student records...</p>
-          </td>
-        </tr>
-      `;
-    }
+            // Add ripple effect to table rows
+            rows.forEach(row => {
+                row.addEventListener('click', function(e) {
+                    const ripple = document.createElement('div');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                        z-index: 1;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
 
-    // Function to show empty state
-    function showEmptyState() {
-      const tableContainer = document.querySelector('.table-container');
-      tableContainer.innerHTML = `
-        <div class="empty-state">
-          <h3>No Records Found</h3>
-          <p>Add your first student record to get started!</p>
-        </div>
-      `;
-    }
+            // Add floating effect to containers
+            const tableContainer = document.querySelector('.table-container');
+            const searchContainer = document.querySelector('.search-container');
+            
+            tableContainer.style.animation = 'fadeIn 0.8s ease-out 0.2s forwards, floatContainer 6s ease-in-out infinite 1s';
+            searchContainer.style.animation = 'fadeIn 0.8s ease-out 0.4s forwards, floatContainer 6s ease-in-out infinite 1.5s';
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (searchInput.value) {
+                        searchInput.value = '';
+                        searchInput.dispatchEvent(new Event('input'));
+                        searchInput.blur();
+                    } else {
+                        window.location.href = '/';
+                    }
+                }
+                
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
 
-    // Function to render table with data
-    function renderTable(data) {
-      const table = document.getElementById('studentsTable');
-      
-      if (!data || data.length === 0) {
-        showEmptyState();
-        return;
-      }
+            // Search input animations
+            searchInput.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px) scale(1.02)';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0) scale(1)';
+            });
+        });
 
-      // Create table header
-      let tableHTML = `
-        <tr>
-          <th>Student ID</th>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Grade</th>
-        </tr>
-      `;
-
-      // Add data rows
-      data.forEach((student, index) => {
-        tableHTML += `
-          <tr style="animation-delay: ${0.1 + (index * 0.1)}s">
-            <td>${student.id}</td>
-            <td>${student.name}</td>
-            <td>${student.age}</td>
-            <td>${student.grade}</td>
-          </tr>
+        // Add CSS for additional animations
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            @keyframes floatContainer {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-5px); }
+            }
         `;
-      });
+        document.head.appendChild(additionalStyles);
 
-      table.innerHTML = tableHTML;
+        // Dynamic loading state simulation (for when data is being fetched)
+        function showLoadingState() {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const row = document.createElement('tr');
+                row.className = 'loading-shimmer';
+                row.innerHTML = `
+                    <td><div style="height: 20px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div></td>
+                    <td><div style="height: 20px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div></td>
+                    <td><div style="height: 20px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div></td>
+                    <td><div style="height: 20px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div></td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
 
-      // Add hover effects to new rows
-      addTableInteractivity();
-    }
-
-    // Function to add interactivity to table rows
-    function addTableInteractivity() {
-      const tableRows = document.querySelectorAll('tr:not(:first-child)');
-      tableRows.forEach((row, index) => {
-        row.addEventListener('mouseenter', function() {
-          this.style.transform = 'scale(1.02) translateZ(0)';
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Keyboard shortcuts handled in main DOMContentLoaded function
         });
-        
-        row.addEventListener('mouseleave', function() {
-          this.style.transform = 'scale(1) translateZ(0)';
-        });
-      });
-    }
-
-    // Function to simulate API call or fetch data
-   
-
-    // Function to show error state
-    function showError(error) {
-      const tableContainer = document.querySelector('.table-container');
-      tableContainer.innerHTML = `
-        <div class="empty-state">
-          <h3 style="color: #dc3545;">Error Loading Records</h3>
-          <p>Unable to load student records. Please try again.</p>
-          <button onclick="loadStudentData()" style="
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-          ">Retry</button>
-        </div>
-      `;
-    }
-
-    // Function to refresh data
-    function refreshData() {
-      loadStudentData();
-    }
-
-    // Create floating particles - matching the form page
-    function createParticle() {
-      const particle = document.createElement('div');
-      particle.classList.add('particle');
-      
-      const size = Math.random() * 4 + 2;
-      const left = Math.random() * 100;
-      const delay = Math.random() * 8;
-      
-      particle.style.width = size + 'px';
-      particle.style.height = size + 'px';
-      particle.style.left = left + '%';
-      particle.style.animationDelay = delay + 's';
-      
-      document.body.appendChild(particle);
-      
-      setTimeout(() => {
-        particle.remove();
-      }, 8000);
-    }
-
-    // Generate particles periodically
-    setInterval(createParticle, 300);
-
-    // Add search functionality
-    function addSearchFeature() {
-      const searchInput = document.createElement('input');
-      searchInput.type = 'text';
-      searchInput.placeholder = 'Search students...';
-      searchInput.style.cssText = `
-        width: 100%;
-        max-width: 300px;
-        padding: 12px 20px;
-        margin-bottom: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 25px;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        font-size: 16px;
-        backdrop-filter: blur(10px);
-        outline: none;
-        transition: all 0.3s ease;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-      `;
-      
-      searchInput.addEventListener('focus', function() {
-        this.style.background = 'rgba(255, 255, 255, 0.3)';
-        this.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-      });
-      
-      searchInput.addEventListener('blur', function() {
-        this.style.background = 'rgba(255, 255, 255, 0.2)';
-        this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-      });
-      
-      const tableContainer = document.querySelector('.table-container');
-      tableContainer.insertBefore(searchInput, tableContainer.firstChild);
-      
-      // Search functionality
-      searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#studentsTable tr:not(:first-child)');
-        
-        rows.forEach(row => {
-          const text = row.textContent.toLowerCase();
-          if (text.includes(searchTerm)) {
-            row.style.display = '';
-            row.style.animation = 'fadeInRow 0.3s ease-out';
-          } else {
-            row.style.display = 'none';
-          }
-        });
-      });
-    }
-
-    // Initialize the page
-    window.addEventListener('load', function() {
-      // Load data dynamically
-      loadStudentData();
-      
-      // Add search functionality
-      setTimeout(() => {
-        addSearchFeature();
-      }, 2000); // Add search after table loads
-    });
-
-    // Add refresh functionality (optional)
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-        e.preventDefault();
-        refreshData();
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
